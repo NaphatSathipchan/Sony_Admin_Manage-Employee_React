@@ -1,0 +1,189 @@
+import React, { useState } from 'react';
+import './App.css';
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+
+const App = () => {
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  const onSelectFile = (event) => {
+    const selectedFiles = event.target.files;
+    const selectedFilesArray = Array.from(selectedFiles);
+
+    const imagesArray = selectedFilesArray.map((file) => {
+      return URL.createObjectURL(file);
+    });
+
+    setSelectedImages((previousImages) => previousImages.concat(imagesArray));
+
+    // FOR BUG IN CHROME
+    event.target.value = '';
+  };
+
+  function deleteHandler(image) {
+    setSelectedImages(selectedImages.filter((e) => e !== image));
+    URL.revokeObjectURL(image);
+  }
+
+  function deleteAllHandler() {
+    selectedImages.forEach((image) => URL.revokeObjectURL(image));
+    setSelectedImages([]);
+  }
+  const [showSuccess, setShowSuccess] = useState(false);
+    const [fullscreen, setFullscreen] = useState(true);
+    const [show, setShow] = useState(false);
+
+  const handleButtonClick = () => {
+    setFullscreen(true);
+    setShowSuccess(true);
+
+    // You may want to reset the success message after a delay
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000); // 3000 milliseconds (3 seconds)
+    };
+    
+
+  return (
+    <section>
+      <img
+        style={{
+          width: 212,
+          height: 199,
+          left: 209,
+          top: 150,
+          position: "absolute",
+          background: "linear-gradient(0deg, #D9D9D9 0%, #D9D9D9 100%)",
+          borderRadius: 143,
+        }}
+        src="https://scontent.fbkk5-6.fna.fbcdn.net/v/t1.15752-9/415356452_879401330591422_948746939450287122_n.png?_nc_cat=102&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeECcmyLDJi4LOcbgQopIzSLs8mgHWWXcXazyaAdZZdxdp-a-ZeIYoTOTy2yUAGT0AmmnyHu2qys5trN77BLuHVq&_nc_ohc=nUVatCralJcAX_wkyiD&_nc_ht=scontent.fbkk5-6.fna&oh=03_AdTES4XEPigSIy3n1gzoyY4o1w1Z6jHTI5aR6UASIfaVug&oe=65CA11AF"
+        alt="Background"
+      />
+      <div className='button-group'>
+        <label>
+          + Add Images
+          <input
+            type='file'
+            name='images'
+            onChange={onSelectFile}
+            multiple
+            accept='image/png, image/jpeg, image/webp'
+          />
+        </label>
+
+        {selectedImages.length > 0 && (
+          <button onClick={deleteAllHandler} className='delete-all-button'>
+            Delete All Images
+          </button>
+        )}
+      </div>
+
+      <div className='images-container'>
+        {selectedImages.length > 0 &&
+          selectedImages.map((image, index) => (
+            <div key={image} className='image-wrapper'>
+              <button className='delete-button' onClick={() => deleteHandler(image)}>
+                Delete
+              </button>
+              <img src={image} height={80} width={80} alt='upload' />
+              <p>{index + 1}</p>
+            </div>
+          ))}
+      </div>
+      {/* Dropdown */}
+      <div style={{ width: 362, height: 45, left: 134, top: 420, position: "absolute" }}>
+        <div
+          style={{
+            width: 362,
+            height: 45,
+            left: 0,
+            top: 0,
+            position: "absolute",
+            background: "white",
+            borderRadius: 14,
+            border: "1px solid black", // Changed "black" to "solid black"
+          }}
+        />
+        {/* Dropdown for Employee Name */}
+        <Form.Select style={{ width: 335, height: 30, left: 23, top: 10, position: "absolute", border: "0px solid black" }}>
+          <option value="employee1">Employee 1</option>
+          <option value="employee2">Employee 2</option>
+        </Form.Select>
+      </div>
+
+      <div style={{ width: 362, height: 45, left: 134, top: 500, position: "absolute" }}>
+        <div
+          style={{
+            width: 362,
+            height: 45,
+            left: 0,
+            top: 0,
+            position: "absolute",
+            background: "white",
+            borderRadius: 14,
+            border: "1px solid black", // Changed "black" to "solid black"
+          }}
+        />
+        {/* Dropdown for Employee Number */}
+        <Form.Select style={{ width: 335, height: 30, left: 23, top: 10, position: "absolute", border: "0px solid black" }}>
+          <option value="code1">1234</option>
+          <option value="code2">4567</option>
+        </Form.Select>
+      </div>
+      {/* Upload */}
+      <div style={{ width: 174, height: 45, left: 210, top: 600, position: "absolute" }}>
+        <div
+          style={{
+            width: 174,
+            height: 45,
+            left: 0,
+            top: 0,
+            position: "absolute",
+            background: "#1C1C1C",
+            boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+            borderRadius: 0,
+          }}
+        />
+              <Button onClick={handleButtonClick} variant="primary" style={{
+                  width: "100%",
+                  height: "100%",
+                  cursor: "pointer"
+              }}>
+          <div
+            style={{
+              width: 67,
+              height: 10,
+              left: 53,
+              top: 12,
+              position: "absolute",
+              textAlign: "center",
+              color: "white",
+              fontSize: 14,
+              fontFamily: "Kanit",
+              fontWeight: "400",
+              wordWrap: "break-word",
+            }}
+          >
+            ADD
+          </div>
+        </Button>
+              {/* Success Modal */}
+        <Modal show={showSuccess} fullscreen={fullscreen} onHide={() => setShowSuccess(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Success!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Your upload was successful.</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowSuccess(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </section>
+  );
+};
+
+export default App;
+
